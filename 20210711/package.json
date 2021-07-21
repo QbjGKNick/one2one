@@ -1,0 +1,13 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "main": "index.js",
+  "bin": "bin/lais",
+  "scripts": {},
+  "author": "jiangqb",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.1",
+    "commander": "^4.1.1"
+  }
+}
