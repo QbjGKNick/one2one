@@ -86,6 +86,8 @@ program.parse(process.argv)
 // a.bundle.js + b.bundle.js
 // Entry.html -> A component1 + B component2
 
-// 静态分析（目前所有未被改造的编译工具所采用） / 动态分析
-// a = require("./xxxx")
-// import a from "...."
+// 静态分析（目前所有未被改造的编译工具所采用） 
+//    a = require("./xxxx")
+//    import a from "...."
+// 动态分析（我们根据依赖的依据在运行时进行分析，然后加载）
+// loader
