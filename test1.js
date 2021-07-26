@@ -92,7 +92,27 @@ function green() {
 function yellow() {
   console.log('yellow...')
 }
-function startLoopLight() {}
+
+function wait(delay) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, delay)
+  })
+}
+
+function startLoopLight(arr) {
+  let promise = Promise.resolve()
+  for(let i = 0; i < arr.length; i++) {
+    promise = promise.then(() => {
+      return arr[i][0]()
+    }).then(() => {
+      return wait(arr[i][1])
+    })
+  }
+
+  return promise.then(() => {
+    return startLoopLight()
+  })
+}
 // 循环输出
 // red
 // wait(1000ms)
@@ -111,5 +131,55 @@ startLoopLight([
 
 // 第6题
 // 请手写一个简单的Promise实现，其需要包含Promise构造函数和then方法。
-function Promise(callback) {}
-Promise.prototype.then = function (onfulfilled, onrejected) {}
+const PENDING = 'pending'
+const RESOLVED = 'resolved'
+const REJECTED = 'rejected'
+function Promise(callback) {
+  const self = this
+  self.state = PENDING
+  self.value = null
+  self.resolvedCallbacks = []
+  self.rejectedCallbacks = []
+
+  function resolve(value) {
+    if (self.state === PENDING) {
+      self.state = RESOLVED
+      self.value = value
+      self.resolvedCallbacks.map((cb) => cb(self.value))
+    }
+  }
+
+  function reject(value) {
+    if (self.state === PENDING) {
+      self.state = REJECTED
+      self.value = value
+      self.rejectedCallbacks.map((cb) => cb(self.value))
+    }
+  }
+
+  try {
+    callback(resolve, reject)
+  } catch (error) {
+    reject(error)
+  }
+}
+Promise.prototype.then = function (onfulfilled, onrejected) {
+  const self = this
+  onfulfilled = typeof onfulfilled === 'function' ? onfulfilled : (v) => v
+  onRejected =
+    typeof onrejected === 'function'
+      ? onrejected
+      : (e) => {
+          throw e
+        }
+  if (self.state === PENDING) {
+    self.resolvedCallbacks.push(onfulfilled)
+    self.rejectedCallbacks.push(onrejected)
+  }
+  if (self.state === RESOLVED) {
+    onfulfilled(self.value)
+  }
+  if (self.state === REJECTED) {
+    onrejected(self.value)
+  }
+}
