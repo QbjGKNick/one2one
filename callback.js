@@ -1,5 +1,18 @@
-// 存在一个request(option, callback)函数用来进行ajax请求
-// 请使用 Promise 实现一个retry(option, count)函数。
+// 存在一个request(option, callback)函数用来进行ajax请求, 请实现一个retry(option, callback, count)函数。
+
+function retry(option, callback, count) {
+  request(option, (error, data) => {
+    if (error != null) {
+      if (count <= 0) {
+        callback(error)
+      } else else {
+        retry(option, callback, count -1)
+      }
+    } else {
+      callback(null, data)
+    }
+  })
+}
 
 // callbakc -> callback hell
 // promise -> 共享变量无法很好的进行.then链式传递

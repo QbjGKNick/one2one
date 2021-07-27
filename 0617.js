@@ -16,7 +16,55 @@
 
 const tokenizer = {
   path: '',
-  next() {}
+  index: 0,
+  pathLength: 0,
+  init(path) {
+    this.path = path
+    this.pathLength = path.length
+    this.index = 0
+  },
+  next() {
+    let token = ''
+    let skipped = this.skipBlank()
+    if (!skipped) {
+      return null
+    }
+
+    while(true) {
+      if (this.index > this.pathLength) {
+        break
+      }
+
+      const char = this.path[this.index]
+      if (this.isBlank(char)) {
+        break
+      }
+
+      if (this.isCharOrNumber(char))
+    }
+  },
+  skipBlank() {
+    while(true) {
+      if (this.index > this.pathLength) {
+        return false
+      }
+
+      const char = this.path[this.index]
+      if (this.isBlank(char)) {
+        this.index += 1
+      } else {
+        break;
+      }
+    }
+
+    return true
+  },
+  isBlank(char) {
+    return char === " " || char === "\n" || char === "\t" || char === "\n" || char == null
+  },
+  isCharOrNumber(char) {
+    return /[a-zA-Z]|\d/.test(char)
+  }
 }
 
 const parser = {
@@ -24,7 +72,10 @@ const parser = {
 }
 
 const _ = {
-  get(target, keypath) {}
+  get(target, keypath) {
+    tokenizer.init(keypath)
+    const token = tokenizer.next()
+  }
 }
 
 _.get({ a: [{ b: { c: 1 } }] }, 'a[0].b[0].c')
