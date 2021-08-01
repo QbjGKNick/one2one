@@ -1,33 +1,62 @@
-const program = require("commander")
-const chalk = require("chalk")
-const path = require("path")
+const program = require('commander')
+const chalk = require('chalk')
+const path = require('path')
 const fs = require('fs')
+const Bundler = require('parcel-bundler')
+const transform = require('./src/transform.js')
 
-program.version(require("./package.json").version)
-program.option("-d, --dir <dirpath>", "set the output directory, default to .")
+program.version(require('./package.json').version)
+program.option('-d, --dir <dirpath>', 'set the output directory, default to .')
 program
-  .command("build       [options]")
-  .description("build for production")
-  .action((env, options) => {
-    const { dir } = options.parent
-    console.log(dir)
-    console.log(chalk.green(`[INFO] >>> build start ${dir}...`))
+  .command('build       [options]')
+  .description('build for production')
+  .action(async (env, options) => {
+    const { args, dir } = options.parent
+    if (args.length === 0) {
+      console.error(
+        chalk.red(`[Error] >>> missing build dirpath: lais build [dirpath]`)
+      )
+      process.exit(1)
+    }
+    // console.log(dir)
+    // console.log(chalk.green(`[INFO] >>> build start ${dir}...`))
+    // lais build ./dem -d ./output
+    const dirpath = path.resolve('.', args[0])
+    console.log(dirpath)
+    const bundler = new Bundler(`${dirpath}/index.html`, {
+      target: 'browser', // 编译的目标
+      bundleNodeModules: true,
+      watch: false,
+      hmr: false,
+      minify: true,
+      cache: true,
+      sourceMaps: false,
+      autoInstall: false,
+      contentHash: true
+    })
+
+    let assets = await bundler.bundle()
+    console.log(assets)
+    // 将assets的对象转化为JSON的形式方便我们进行调试和查看
+    assets = transform(assets)
   })
 
 program
-  .command("dev         [options]")
-  .description("starts the bundler in watch node")
+  .command('dev         [options]')
+  .description('starts the bundler in watch node')
   .action((env, options) => {
-    console.log(chalk.red("dev start..."))
+    console.log(chalk.red('dev start...'))
   })
 
 program
-  .command("project     [options]")
-  .description("create new project")
+  .command('project     [options]')
+  .description('create new project')
   .action((env, options) => {
     const { args, dir } = options.parent
     if (args.length === 0) {
-      console.error(chalk.red(`[Error] missing project name: lais project [name]`))
+      console.error(
+        chalk.red(`[Error] missing project name: lais project [name]`)
+      )
       process.exit(1)
     }
     const dirpath = path.resolve(dir || '.') + '/' + args[0]
@@ -35,35 +64,45 @@ program
       return
     }
 
-    fs.mkdirSync(dirpath);
-    ["package.json", "index.js", "index.html", "App.vue", ".babelrc", ".gitignore"].forEach(v => {
+    fs.mkdirSync(dirpath)
+    ;[
+      'package.json',
+      'index.js',
+      'index.html',
+      'App.vue',
+      '.babelrc',
+      '.gitignore'
+    ].forEach((v) => {
       const src = __dirname + `/template/${v}`
       if (fs.existsSync(src)) {
         let content = fs.readFileSync(src).toString()
         content = content.replace(/{{name}}/g, args[0])
         fs.writeFileSync(`${dirpath}/${v}`, content)
       }
-    });
-
-    ["assets", "pages"].forEach(v => {
+    })
+    ;['assets', 'pages'].forEach((v) => {
       fs.mkdirSync(`${dirpath}/${v}`)
     })
 
-    console.log(chalk.green(`[INFO] >>> create ${args[0]} project successfully`))
+    console.log(
+      chalk.green(`[INFO] >>> create ${args[0]} project successfully`)
+    )
   })
 
 program
-  .command("page        [options]")
-  .description("create new page")
+  .command('page        [options]')
+  .description('create new page')
   .action((env, options) => {
     const { args, dir } = options.parent
     if (args.length === 0) {
-      console.error(chalk.red(`[ERROR] >>> missing page name: lais page [name]`))
+      console.error(
+        chalk.red(`[ERROR] >>> missing page name: lais page [name]`)
+      )
       process.exit(1)
     }
 
     const dirpath = path.resolve(dir || '.') + '/pages'
-    console.log(dirpath);
+    console.log(dirpath)
     if (!fs.existsSync(dirpath)) {
       console.error(chalk.red(`[ERROR] >>> ${dirpath} not exists`))
       process.exit(1)
@@ -72,7 +111,7 @@ program
     let data = fs.readFileSync(__dirname + '/template/pages/Template.vue')
     const distName = `${dirpath}/${args[0]}.vue`
     fs.writeFileSync(distName, data)
-    console.log(chalk.green(`[INFO] >>> create ${args[0]} page successfully`));
+    console.log(chalk.green(`[INFO] >>> create ${args[0]} page successfully`))
   })
 
 program.parse(process.argv)
@@ -86,8 +125,13 @@ program.parse(process.argv)
 // a.bundle.js + b.bundle.js
 // Entry.html -> A component1 + B component2
 
-// 静态分析（目前所有未被改造的编译工具所采用） 
+// 静态分析（目前所有未被改造的编译工具所采用）
 //    a = require("./xxxx")
 //    import a from "...."
 // 动态分析（我们根据依赖的依据在运行时进行分析，然后加载）
 // loader
+
+// 针对于我们当前的需求，静态分析不能够满足，因此我们采用动态分析的方式进行处理
+// -> 资源表
+// -> webpack: stats.json
+// -> parcel: bundle（优先用parcel来进行讲解）

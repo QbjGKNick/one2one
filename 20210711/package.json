@@ -8,6 +8,8 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^4.1.1",
-    "commander": "^4.1.1"
+    "commander": "^4.1.1",
+    "md5": "2.3.0",
+    "parcel-bundler": "1.12.5"
   }
 }
