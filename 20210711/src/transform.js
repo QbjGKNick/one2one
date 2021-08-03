@@ -14,9 +14,10 @@ function conv2Json(asset) {
     bundlers[name] = ref
   }
 
+  // console.log(ref)
   for (const [key, value] of depAssets) {
     const { name } = value
-    if (bunlders[name]) {
+    if (bundlers[name]) {
       ref.deps[key.name] = bundlers[name]
     } else {
       ref.deps[key.name] = conv2Json(value)
@@ -28,4 +29,5 @@ function conv2Json(asset) {
 
 module.exports = (assets) => {
   const { entryAsset } = assets
+  return conv2Json(entryAsset)
 }

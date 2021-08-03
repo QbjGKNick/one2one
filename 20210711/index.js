@@ -22,7 +22,7 @@ program
     // console.log(chalk.green(`[INFO] >>> build start ${dir}...`))
     // lais build ./dem -d ./output
     const dirpath = path.resolve('.', args[0])
-    console.log(dirpath)
+    // console.log(dirpath)
     const bundler = new Bundler(`${dirpath}/index.html`, {
       target: 'browser', // 编译的目标
       bundleNodeModules: true,
@@ -36,9 +36,9 @@ program
     })
 
     let assets = await bundler.bundle()
-    console.log(assets)
     // 将assets的对象转化为JSON的形式方便我们进行调试和查看
     assets = transform(assets)
+    console.log(assets)
   })
 
 program
