@@ -1,0 +1,21 @@
+{
+  id: 'abcad07',
+  name: '/Users/jqb/Desktop/lagou/one2one/20210711/demo/index.html',
+  type: 'html',
+  basename: 'index.html',
+  hash: '73ebdf4c39847163d307d0ea75702ad3',
+  generated: {
+    html: '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Document</title></head><body> <script src="/demo.6f2bd6a3.js"></script> </body></html>'
+  },
+  deps: {
+    './index.js': {
+      id: 'a52a003',
+      name: '/Users/jqb/Desktop/lagou/one2one/20210711/demo/index.js',
+      type: 'js',
+      basename: 'index.js',
+      hash: '6c9259d7d07eca009750daa6764afa64',
+      generated: [Object],
+      deps: [Object]
+    }
+  }
+}
