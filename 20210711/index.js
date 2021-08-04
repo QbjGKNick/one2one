@@ -5,6 +5,7 @@ const fs = require('fs')
 const Bundler = require('parcel-bundler')
 const transform = require('./src/transform.js')
 const flatten = require('./src/flatten.js')
+const optimize = require('./src/optimize.js')
 
 program.version(require('./package.json').version)
 program.option('-d, --dir <dirpath>', 'set the output directory, default to .')
@@ -40,6 +41,9 @@ program
     // 1. 将assets的对象转化为JSON的形式方便我们进行调试和查看
     assets = transform(assets)
     // 2. 将嵌套的资源JSON对象进行展平操作（为了方便开发和调试）
+    assets = flatten(assets)
+    // 3. 资源表的优化（合并/循环消除）
+    assets = optimize(assets)
     console.log(assets)
   })
 
