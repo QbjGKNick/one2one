@@ -21,10 +21,9 @@ program
       process.exit(1)
     }
     // console.log(dir)
-    // console.log(chalk.green(`[INFO] >>> build start ${dir}...`))
+    console.log(chalk.green(`[INFO] >>> build start ${dir}...`))
     // lais build ./dem -d ./output
     const dirpath = path.resolve('.', args[0])
-    // console.log(dirpath)
     const bundler = new Bundler(`${dirpath}/index.html`, {
       target: 'browser', // 编译的目标
       bundleNodeModules: true,
