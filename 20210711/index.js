@@ -20,8 +20,8 @@ program
       )
       process.exit(1)
     }
-    // console.log(dir)
-    console.log(chalk.green(`[INFO] >>> build start ${dir}...`))
+    // console.log(options)
+    console.log(chalk.green(`[INFO] >>> build start ...`))
     // lais build ./dem -d ./output
     const dirpath = path.resolve('.', args[0])
     const bundler = new Bundler(`${dirpath}/index.html`, {
@@ -133,6 +133,7 @@ program.parse(process.argv)
 // 静态分析（目前所有未被改造的编译工具所采用）
 //    a = require("./xxxx")
 //    import a from "...."
+//    好处：简单、性能上好
 // 动态分析（我们根据依赖的依据在运行时进行分析，然后加载）
 // loader
 
