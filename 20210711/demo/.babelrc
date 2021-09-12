@@ -1,0 +1,3 @@
+{
+  "plugins": ["@bable/plugin-transform-runtime"]
+}
