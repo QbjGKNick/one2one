@@ -1,11 +1,10 @@
-// import Vue from 'vue'
-// import App from './App.vue'
-// import 'normalize.css'
+import Vue from 'vue'
+import _ from "lodash"
+import axios from "axios"
+import App from './App.vue'
+import 'normalize.css'
 
-// new Vue({
-//   el: '#app',
-//   render: (h) => h(App)
-// })
-
-const App = reuquire('./App.vue')
-const _ = require("lodash")
+new Vue({
+  el: '#app',
+  render: (h) => h(App)
+})

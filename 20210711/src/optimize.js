@@ -90,7 +90,7 @@ module.exports = (assets) => {
 
   // 2. 尽可能的合并模块
   while (true) {
-    const values = Object.values(bunlder)
+    const values = Object.values(bundler)
     let i = 0
     for (; i < values.length; i++) {
       const { refs, isPkg } = values[i]

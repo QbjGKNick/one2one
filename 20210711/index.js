@@ -6,6 +6,10 @@ const Bundler = require('parcel-bundler')
 const transform = require('./src/transform.js')
 const flatten = require('./src/flatten.js')
 const optimize = require('./src/optimize.js')
+const output = require('./src/output.js')
+const walker = require('folder-walker')
+const isdir = require('isdir')
+const _ = require('lodash')
 
 program.version(require('./package.json').version)
 program.option('-d, --dir <dirpath>', 'set the output directory, default to .')
@@ -20,30 +24,51 @@ program
       )
       process.exit(1)
     }
-    // console.log(options)
     console.log(chalk.green(`[INFO] >>> build start ...`))
-    // lais build ./dem -d ./output
-    const dirpath = path.resolve('.', args[0])
-    const bundler = new Bundler(`${dirpath}/index.html`, {
-      target: 'browser', // 编译的目标
-      bundleNodeModules: true,
-      watch: false,
-      hmr: false,
-      minify: true,
-      cache: true,
-      sourceMaps: false,
-      autoinstall: false,
-      contentHash: true
-    })
+    // console.log(options)
+    // lais build ./demo -d ./output
+    // 0. 去获取到所有的项目下的pages的*.vue文件
+    let dirpath = path.resolve('.', args[0])
+    dirpath = `${dirpath}${path.sep}pages`
+    const dirs = fs.readdirSync(dirpath)
+    let files = []
+    for (let i = 0; i < dirs.length; i++) {
+      const filepath = `${dirpath}${path.sep}${dirs[i]}`
+      if (!isdir(filepath)) {
+        files.push(filepath)
+      }
+    }
 
-    let assets = await bundler.bundle()
-    // 1. 将assets的对象转化为JSON的形式方便我们进行调试和查看
-    assets = transform(assets)
-    // 2. 将嵌套的资源JSON对象进行展平操作（为了方便开发和调试）
-    assets = flatten(assets)
+    for (let i = 0; i < files.length; i++) {
+      const bundler = new Bundler(files[i], {
+        target: 'browser', // 编译的目标
+        bundleNodeModules: true,
+        watch: false,
+        hmr: false,
+        minify: true,
+        cache: true,
+        sourceMaps: false,
+        autoinstall: false,
+        contentHash: true
+      })
+  
+      let assets = await bundler.bundle()
+      // 1. 将assets的对象转化为JSON的形式方便我们进行调试和查看
+      assets = transform(assets)
+      // 2. 将嵌套的资源JSON对象进行展平操作（为了方便开发和调试）
+      files[i] = flatten(assets, dir)
+    }
+
+    const temp = {}
+    let asset = _.unionBy(...files.map(v => Object.values(v)), 'alias')
+    for (let i = 0; i < asset.length; i++) {
+      temp[asset[i].alias] = asset[i]
+    }
+
     // 3. 资源表的优化（合并/循环消除）
-    assets = optimize(assets)
-    console.log(assets)
+    asset = temp
+    asset = optimize(asset)
+    output(asset)
   })
 
 program
