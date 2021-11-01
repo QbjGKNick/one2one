@@ -15,7 +15,7 @@ function output2pkg(assets, asset) {
   }
 
   bundler[alias] = 1
-  for (let i=0;i<bundles.length;i++){
+  for (let i = 0; i < bundles.length; i++) {
     const item = assets[bundles[i]]
     for (let key in item.generated) {
       if (!generated[key]) {
@@ -30,7 +30,7 @@ function output2pkg(assets, asset) {
     delete assets[bundles[i]].generated
   }
 
-  for(let key in generated){
+  for (let key in generated) {
     generated[key] = generated[key].join('\n')
   }
 
@@ -53,7 +53,7 @@ function output2pkg(assets, asset) {
   write2file(asset)
 }
 
-function output2file(asset) {}
+function output2file(asset) { }
 
 module.exports = (assets, dirpath) => {
   bunlder = {}
@@ -63,11 +63,19 @@ module.exports = (assets, dirpath) => {
     if (asset.isPkg) {
       continue
     }
-
+    console.log(assets);
     if (asset.pkg) {
       output2pkg(assets, assets[asset.pkg])
     } else {
       output2file(asset)
     }
+  }
+
+  fs.writeFileSync(`${dirpath}/map.json`, JSON.stringify(assets))
+
+  // 输出lookup/module 等相关依赖文件
+  for (let key of ['package.json', 'index.html', 'lookup.js', 'module.js']) {
+    let data = fs.readFileSync(`${__dirname}/../vendor/${key}`)
+    fs.writeFileSync(`${dirpath}/${key}`, data)
   }
 }

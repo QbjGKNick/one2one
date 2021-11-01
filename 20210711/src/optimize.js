@@ -71,12 +71,14 @@ function mergeSimpleNode(node) {
 module.exports = (assets) => {
   bundler = {}
 
+  debugger
   // 0. 复制一份数据进行分析，refs代表的是对应节点的依赖父级节点
   for (let key in assets) {
     if (!bundler[key]) {
       bundler[key] = { ...assets[key], refs: [] }
     }
   }
+  console.log('------------aaaa-----------------');
 
   // 1. 循环消除
   for (let key in bundler) {

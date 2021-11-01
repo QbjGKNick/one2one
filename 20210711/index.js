@@ -166,3 +166,17 @@ program.parse(process.argv)
 // -> 资源表
 // -> webpack: stats.json
 // -> parcel: bundle（优先用parcel来进行讲解）
+
+// 1. -> 解析map.json的库
+//    -> PageA@d56bca4@1.0.0 -> [__pkg0, __pkg1, normalize]
+
+// 2. -> combo -> http://localhost??__pkg0,__pkg1,normalize --> 返回的是逗号分隔的文件合并内容
+// 为什么用combo? 为了减少加载的请求（http2的话，就没必要这么做了）
+
+// 3. -> AMD最小实现 -> 实现define及require方法
+
+// 4. -> 编写入口index.html, 将整个项目能够顺利渲染出来
+
+// 5. -> CI/CD/部署（GitHub Actions/Jenkins/CDN）
+
+// 6. -> SSR部分（基于Vue-SSR来自己搭建一个项目进行渲染）
